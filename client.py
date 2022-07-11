@@ -200,15 +200,15 @@ class Client(object):
                 predicted2 = outputs2.argmax(dim=1, keepdim=True)
                 correct2 += predicted2.eq(labels.view_as(predicted2)).sum().item()
 
-                total_size += 1#data.shape[0]
+                total_size += data.shape[0]
 
                 if self.device == "cuda": torch.cuda.empty_cache()
 
         test_loss1 = test_loss1 / len(self.dataloader)
-        test_accuracy1 = correct1 / len(self.dataloader)
+        test_accuracy1 = correct1 / len(self.data)
 
         test_loss2 = test_loss2 / len(self.dataloader)
-        test_accuracy2 = correct2 / len(self.dataloader)
+        test_accuracy2 = correct2 / len(self.data)
 
         
         #print("{} Student model Loss: {} and Accuracy: {}".format(test_loss, test_accuracy))
