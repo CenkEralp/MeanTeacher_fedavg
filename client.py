@@ -137,13 +137,13 @@ class Client(object):
             for i, (data, labels) in enumerate(self.dataloader):#(data, unlabeled_data), labels in self.dataloader: # (
                 #((data, ema_input), target)
                 ema_input, data = data[:self.batch_size // 2], data[self.batch_size // 2:]
-                labels = labels[self.batch_size // 2:] #ema_labels wont be used for the semisupervised experiment
+                #labels = labels[self.batch_size // 2:] #ema_labels wont be used for the semisupervised experiment
 
                 data, labels = data.float().to(self.device), labels.long().to(self.device)
   
                 optimizer.zero_grad()
                 outputs = self.model(data)
-                
+
                 #### EMA input calculation
                 with torch.no_grad():
                   ema_input_var = torch.autograd.Variable(ema_input).cuda()
