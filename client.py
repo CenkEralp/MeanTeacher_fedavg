@@ -86,7 +86,7 @@ class Client(object):
     def teacher_model(self):
         """Local model getter for parameter aggregation."""
         return self.__teacher_model    
-    @model.setter
+    @teacher_model.setter
     def teacher_model(self, teacher_model):
         """Local model setter for passing globally aggregated model parameters."""
         self.__teacher_model = teacher_model
