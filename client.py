@@ -137,7 +137,7 @@ class Client(object):
             for i, (data, labels) in enumerate(self.dataloader):#(data, unlabeled_data), labels in self.dataloader: # (
                 #((data, ema_input), target)
                 ema_input, data = data[:self.batch_size // 2], data[self.batch_size // 2:]
-                #labels = labels[self.batch_size // 2:] #ema_labels wont be used for the semisupervised experiment
+                labels = labels[self.batch_size // 2:] #ema_labels wont be used for the semisupervised experiment
 
                 data, labels = data.float().to(self.device), labels.long().to(self.device)
   
@@ -180,7 +180,7 @@ class Client(object):
         with torch.no_grad():
             for i, (data, labels) in enumerate(self.dataloader):#(data, unlabeled_data), labels in self.dataloader:
                 #ema_input, data = data[:self.batch_size // 2], data[self.batch_size // 2:]
-                labels = labels[self.batch_size // 2:]
+                #labels = labels[self.batch_size // 2:]
                 
                 data, labels = data.float().to(self.device), labels.long().to(self.device)
                 outputs1 = self.model(data)
