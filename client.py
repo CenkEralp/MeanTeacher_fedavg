@@ -43,7 +43,8 @@ args_ema_decay = 0.999
 def update_ema_variables(model, ema_model, global_step):
     alpha = min(1 - 1 / (global_step + 1), args_ema_decay)
     for ema_param, param in zip(ema_model.parameters(), model.parameters()):
-        ema_param.data.mul_(alpha).add_(param.data, alpha=1 - alpha) #add_(1 - alpha, param.data)
+        #ema_param.data.mul_(alpha).add_(param.data, alpha=1 - alpha) #add_(1 - alpha, param.data)
+        ema_param.data = alpha * ema_param.data + (1 - alpha) * param.data
 
 def get_current_consistency_weight(epoch):
     return args_consistency * ramps.sigmoid_rampup(epoch, args_consistency_rampup)
@@ -155,7 +156,10 @@ class Client(object):
                 
                 #### EMA input calculation
 
-                loss = loss_f(outputs, labels) + get_current_consistency_weight(e) * consistency_criterion(outputs, ema_logit)
+                outputs2 = self.model(ema_input_var)
+                outputs2 = Variable(outputs2.detach().data, requires_grad=False)
+
+                loss = loss_f(outputs, labels) + get_current_consistency_weight(e) * consistency_criterion(outputs2, ema_logit)
 
                 loss.backward()
                 optimizer.step()
@@ -177,6 +181,7 @@ class Client(object):
 
         test_loss1, correct1 = 0, 0
         test_loss2, correct2 = 0, 0
+        total_size = 0
         with torch.no_grad():
             for i, (data, labels) in enumerate(self.dataloader):#(data, unlabeled_data), labels in self.dataloader:
                 #ema_input, data = data[:self.batch_size // 2], data[self.batch_size // 2:]
@@ -195,13 +200,15 @@ class Client(object):
                 predicted2 = outputs2.argmax(dim=1, keepdim=True)
                 correct2 += predicted2.eq(labels.view_as(predicted2)).sum().item()
 
+                total_size += 1#data.shape[0]
+
                 if self.device == "cuda": torch.cuda.empty_cache()
 
-        test_loss1 = test_loss1 / len(self.dataloader)
-        test_accuracy1 = correct1 / len(self.data)
+        test_loss1 = test_loss1 / total_size
+        test_accuracy1 = correct1 / total_size
 
-        test_loss2 = test_loss2 / len(self.dataloader)
-        test_accuracy2 = correct2 / len(self.data)
+        test_loss2 = test_loss2 / total_size
+        test_accuracy2 = correct2 / total_size
 
         
         #print("{} Student model Loss: {} and Accuracy: {}".format(test_loss, test_accuracy))

@@ -293,6 +293,7 @@ class Server(object):
 
         test_loss1, correct1 = 0, 0
         test_loss2, correct2 = 0, 0
+        total_size = 0
         with torch.no_grad():
             for data, labels in self.dataloader:
                 data, labels = data.float().to(self.device), labels.long().to(self.device).flatten()
@@ -309,14 +310,16 @@ class Server(object):
                 
                 predicted2 = outputs2.argmax(dim=1, keepdim=True)
                 correct2 += predicted2.eq(labels.view_as(predicted2)).sum().item()
+
+                total_size += 1
                 
                 if self.device == "cuda": torch.cuda.empty_cache()
         self.model.to("cpu")
         self.teacher_model.to("cpu")
 
         
-        test_loss1 = test_loss1 / len(self.dataloader)
-        test_accuracy1 = correct1 / len(self.data)
+        test_loss1 = test_loss1 / total_size
+        test_accuracy1 = correct1 / total_size
 
         print("Student model Loss: {} and Accuracy: {}".format(test_loss1, test_accuracy1))
 
