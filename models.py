@@ -9,6 +9,8 @@ from torch.autograd.variable import Variable
 # Models for federated learning #
 #################################
 # McMahan et al., 2016; 199,210 parameters
+
+batch_size = 256
 class GaussianNoise(nn.Module):
 
     def __init__(self, shape=(100, 1, 28, 28), std=0.05):
@@ -44,7 +46,7 @@ class TwoNN(nn.Module):
 class CNN(nn.Module):
     def __init__(self, name, in_channels, hidden_channels, num_hiddens, num_classes):
         super(CNN, self).__init__()
-        self.gn = GaussianNoise(shape=(5,3,28,28),std=0.05)
+        self.gn = GaussianNoise(shape=(batch_size//2,3,28,28),std=0.05)
         self.name = name
         self.activation = nn.ReLU(True)
 
@@ -59,7 +61,7 @@ class CNN(nn.Module):
         self.fc2 = nn.Linear(in_features=num_hiddens, out_features=num_classes, bias=False)
 
     def forward(self, x):
-        if self.training:#ema_input:
+        if self.training:
           x = self.gn(x)
         x = self.activation(self.conv1(x))
         x = self.maxpool1(x)

@@ -143,6 +143,7 @@ class Client(object):
   
                 optimizer.zero_grad()
                 outputs = self.model(data)
+                
                 #### EMA input calculation
                 with torch.no_grad():
                   ema_input_var = torch.autograd.Variable(ema_input).cuda()
@@ -150,7 +151,8 @@ class Client(object):
                 ema_logit = self.teacher_model(ema_input_var)#, ema_input=True)
                 #ema_logit = ema_model_out
                 ema_logit = Variable(ema_logit.detach().data, requires_grad=False)
-                #consistency_weight = 
+                #consistency_weight =
+                
                 #### EMA input calculation
 
                 loss = loss_f(outputs, labels) + get_current_consistency_weight(e) * consistency_criterion(outputs, ema_logit)
@@ -177,7 +179,7 @@ class Client(object):
         test_loss2, correct2 = 0, 0
         with torch.no_grad():
             for i, (data, labels) in enumerate(self.dataloader):#(data, unlabeled_data), labels in self.dataloader:
-                ema_input, data = data[:self.batch_size // 2], data[self.batch_size // 2:]
+                #ema_input, data = data[:self.batch_size // 2], data[self.batch_size // 2:]
                 labels = labels[self.batch_size // 2:]
                 
                 data, labels = data.float().to(self.device), labels.long().to(self.device)
@@ -205,9 +207,9 @@ class Client(object):
         #print("{} Student model Loss: {} and Accuracy: {}".format(test_loss, test_accuracy))
 
         message = f"\t[Client {str(self.id).zfill(4)}] ...finished evaluation!\
-            \n\t=> Student Test loss: {test_loss:.4f}\
-            \n\t=> Student Test accuracy: {100. * test_accuracy2:.2f}%\
-            \n\t=> Teacher Test loss: {test_loss:.4f}\
+            \n\t=> Student Test loss: {test_loss1:.4f}\
+            \n\t=> Student Test accuracy: {100. * test_accuracy1:.2f}%\
+            \n\t=> Teacher Test loss: {test_loss2:.4f}\
             \n\t=> Teacher Test accuracy: {100. * test_accuracy2:.2f}%\n"
         print(message, flush=True); logging.info(message)
         del message; gc.collect()

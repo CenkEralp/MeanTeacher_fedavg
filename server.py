@@ -53,7 +53,7 @@ class Server(object):
         self._round = 0
         self.writer = writer
 
-        self.model = Network()#eval(model_config["name"])(**model_config)
+        self.model = eval(model_config["name"])(**model_config)
         self.teacher_model = copy.deepcopy(self.model)
         
         self.seed = global_config["seed"]
@@ -288,50 +288,44 @@ class Server(object):
         """Evaluate the global model using the global holdout dataset (self.data)."""
         self.model.eval()
         self.model.to(self.device)
-
-        test_loss, correct = 0, 0
-        with torch.no_grad():
-            for data, labels in self.dataloader:
-                data, labels = data.float().to(self.device), labels.long().to(self.device).flatten()
-                outputs = self.model(data)
-                #print(outputs.shape,labels.shape)
-                test_loss += eval(self.criterion)()(outputs, labels).item()
-                
-                predicted = outputs.argmax(dim=1, keepdim=True)
-                correct += predicted.eq(labels.view_as(predicted)).sum().item()
-                
-                if self.device == "cuda": torch.cuda.empty_cache()
-        self.model.to("cpu")
-
-        
-        test_loss = test_loss / len(self.dataloader)
-        test_accuracy = correct / len(self.data)
-
-        print("Student model Loss: {} and Accuracy: {}".format(test_loss, test_accuracy))
-
         self.teacher_model.eval()
         self.teacher_model.to(self.device)
 
-        test_loss, correct = 0, 0
+        test_loss1, correct1 = 0, 0
+        test_loss2, correct2 = 0, 0
         with torch.no_grad():
             for data, labels in self.dataloader:
                 data, labels = data.float().to(self.device), labels.long().to(self.device).flatten()
-                outputs = self.teacher_model(data)
-                #print(outputs.shape,labels.shape)
-                test_loss += eval(self.criterion)()(outputs, labels).item()
+                #Student Model
+                outputs1 = self.model(data)
+                test_loss1 += eval(self.criterion)()(outputs1, labels).item()
                 
-                predicted = outputs.argmax(dim=1, keepdim=True)
-                correct += predicted.eq(labels.view_as(predicted)).sum().item()
+                predicted1 = outputs1.argmax(dim=1, keepdim=True)
+                correct1 += predicted1.eq(labels.view_as(predicted1)).sum().item()
+
+                #Teacher Model
+                outputs2 = self.teacher_model(data)
+                test_loss2 += eval(self.criterion)()(outputs2, labels).item()
+                
+                predicted2 = outputs2.argmax(dim=1, keepdim=True)
+                correct2 += predicted2.eq(labels.view_as(predicted2)).sum().item()
                 
                 if self.device == "cuda": torch.cuda.empty_cache()
         self.model.to("cpu")
+        self.teacher_model.to("cpu")
 
-        test_loss = test_loss / len(self.dataloader)
-        test_accuracy = correct / len(self.data)
+        
+        test_loss1 = test_loss1 / len(self.dataloader)
+        test_accuracy1 = correct1 / len(self.data)
 
-        print("Teacher model Loss: {} and Accuracy: {}".format(test_loss, test_accuracy))
+        print("Student model Loss: {} and Accuracy: {}".format(test_loss1, test_accuracy1))
 
-        return test_loss, test_accuracy
+        test_loss2 = test_loss2 / len(self.dataloader)
+        test_accuracy2 = correct2 / len(self.data)
+
+        print("Teacher model Loss: {} and Accuracy: {}".format(test_loss2, test_accuracy2))
+
+        return test_loss2, test_accuracy2
 
     def fit(self):
         """Execute the whole process of the federated learning."""

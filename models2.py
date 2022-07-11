@@ -8,7 +8,7 @@ import math
 
 __all__ = ['convlarge']
 
-batch_size = 10
+batch_size = 256
 
 # noise function taken from blog : https://ferretj.github.io/ml/2018/01/22/temporal-ensembling.html?fbclid=IwAR1MEqzhwrl1swzLUDA0kZFN2oVTdcNa497c1l3pC-Xh2kYPlPjRiO0Oucc
 class GaussianNoise(nn.Module):
@@ -69,11 +69,11 @@ class ResidualStack(nn.Module):
         return self.modules_list(input)
 
 class Net(nn.Module):
-    def __init__(self,std = 0.05):
+    def __init__(self,std = 0.1):
         super(Net, self).__init__()
 
         self.std = std
-        self.gn = GaussianNoise(shape=(batch_size,3,28,28),std=self.std)
+        self.gn = GaussianNoise(shape=(batch_size//2,3,28,28),std=self.std)
         
 
         self.res_net_18 = nn.Sequential(
