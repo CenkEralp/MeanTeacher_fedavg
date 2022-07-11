@@ -9,10 +9,10 @@ import logging
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
 
-from src.server import Server
-from src.utils import launch_tensor_board
+from server import Server
+from utils import launch_tensor_board
 
-
+#deneme 12
 if __name__ == "__main__":
     # read configuration file
     with open('./config.yaml') as c:
