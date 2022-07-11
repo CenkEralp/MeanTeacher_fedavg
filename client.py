@@ -129,6 +129,8 @@ class Client(object):
         self.model.to(self.device)
         self.teacher_model.train()
         self.teacher_model.to(self.device)
+
+        loss_f = eval(self.criterion)()
       
         optimizer = eval(self.optimizer)(self.model.parameters(), **self.optim_config)
         for e in range(self.local_epoch):
@@ -143,15 +145,15 @@ class Client(object):
                 outputs = self.model(data)
                 #### EMA input calculation
                 with torch.no_grad():
-                  ema_input_var = torch.autograd.Variable(ema_input)
-                ema_input_var = ema_input_var.cuda()
-                ema_model_out = self.teacher_model(ema_input_var)#, ema_input=True)
-                ema_logit = ema_model_out
+                  ema_input_var = torch.autograd.Variable(ema_input).cuda()
+                #ema_input_var = ema_input_var.cuda()
+                ema_logit = self.teacher_model(ema_input_var)#, ema_input=True)
+                #ema_logit = ema_model_out
                 ema_logit = Variable(ema_logit.detach().data, requires_grad=False)
-                consistency_weight = get_current_consistency_weight(e)
+                #consistency_weight = 
                 #### EMA input calculation
 
-                loss = eval(self.criterion)()(outputs, labels) + consistency_weight * consistency_criterion(outputs, ema_logit)
+                loss = loss_f(outputs, labels) + get_current_consistency_weight(e) * consistency_criterion(outputs, ema_logit)
 
                 loss.backward()
                 optimizer.step()
@@ -171,43 +173,33 @@ class Client(object):
         self.model.to(self.device)
         self.teacher_model.to(self.device)
 
-        test_loss, correct = 0, 0
+        test_loss1, correct1 = 0, 0
+        test_loss2, correct2 = 0, 0
         with torch.no_grad():
             for i, (data, labels) in enumerate(self.dataloader):#(data, unlabeled_data), labels in self.dataloader:
                 ema_input, data = data[:self.batch_size // 2], data[self.batch_size // 2:]
                 labels = labels[self.batch_size // 2:]
                 
                 data, labels = data.float().to(self.device), labels.long().to(self.device)
-                outputs = self.model(data)
-                test_loss += eval(self.criterion)()(outputs, labels).item()
+                outputs1 = self.model(data)
+                test_loss1 += eval(self.criterion)()(outputs1, labels).item()
                 
-                predicted = outputs.argmax(dim=1, keepdim=True)
-                correct += predicted.eq(labels.view_as(predicted)).sum().item()
+                predicted1 = outputs1.argmax(dim=1, keepdim=True)
+                correct1 += predicted1.eq(labels.view_as(predicted1)).sum().item()
+
+                outputs2 = self.teacher_model(data)
+                test_loss2 += eval(self.criterion)()(outputs2, labels).item()
+                
+                predicted2 = outputs2.argmax(dim=1, keepdim=True)
+                correct2 += predicted2.eq(labels.view_as(predicted2)).sum().item()
 
                 if self.device == "cuda": torch.cuda.empty_cache()
 
-        test_loss1 = test_loss / len(self.dataloader)
-        test_accuracy1 = correct / len(self.data)
+        test_loss1 = test_loss1 / len(self.dataloader)
+        test_accuracy1 = correct1 / len(self.data)
 
-        test_loss, correct = 0, 0
-        with torch.no_grad():
-            for i, (data, labels) in enumerate(self.dataloader):#(data, unlabeled_data), labels in self.dataloader:
-                ema_input, data = data[:self.batch_size // 2], data[self.batch_size // 2:]
-                labels = labels[self.batch_size // 2:]
-                
-                data, labels = data.float().to(self.device), labels.long().to(self.device)
-                outputs = self.model(data)
-                test_loss += eval(self.criterion)()(outputs, labels).item()
-                
-                predicted = outputs.argmax(dim=1, keepdim=True)
-                correct += predicted.eq(labels.view_as(predicted)).sum().item()
-
-                if self.device == "cuda": torch.cuda.empty_cache()
-        self.model.to("cpu")
-        self.teacher_model.to("cpu")
-
-        test_loss2 = test_loss / len(self.dataloader)
-        test_accuracy2 = correct / len(self.data)
+        test_loss2 = test_loss2 / len(self.dataloader)
+        test_accuracy2 = correct2 / len(self.data)
 
         
         #print("{} Student model Loss: {} and Accuracy: {}".format(test_loss, test_accuracy))
