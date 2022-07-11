@@ -128,7 +128,9 @@ class Client(object):
     def client_update(self):
         """Update local model using local dataset."""
         self.model.train()
+        self.model.to(self.device)
         self.teacher_model.train()
+        self.teacher_model.to(self.device)
       
         optimizer = eval(self.optimizer)(self.model.parameters(), **self.optim_config)
         for e in range(self.local_epoch):
@@ -161,13 +163,15 @@ class Client(object):
                 update_ema_variables(self.model, self.teacher_model, self.global_step) 
 
                 if self.device == "cuda": torch.cuda.empty_cache()               
-        #self.model.to("cpu")
-        #self.teacher_model.to("cpu")
+        self.model.to("cpu")
+        self.teacher_model.to("cpu")
 
     def client_evaluate(self):
         """Evaluate local model using local dataset (same as training set for convenience)."""
         self.model.eval()
         self.teacher_model.eval()
+        self.model.to(self.device)
+        self.teacher_model.to(self.device)
 
         test_loss, correct = 0, 0
         with torch.no_grad():
@@ -201,8 +205,8 @@ class Client(object):
                 correct += predicted.eq(labels.view_as(predicted)).sum().item()
 
                 if self.device == "cuda": torch.cuda.empty_cache()
-        #self.model.to("cpu")
-        #self.teacher_model.to("cpu")
+        self.model.to("cpu")
+        self.teacher_model.to("cpu")
 
         test_loss2 = test_loss / len(self.dataloader)
         test_accuracy2 = correct / len(self.data)
