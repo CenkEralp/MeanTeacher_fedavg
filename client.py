@@ -121,8 +121,6 @@ class Client(object):
         self.criterion = client_config["criterion"]
         self.optimizer = client_config["optimizer"]
         self.optim_config = client_config["optim_config"]
-        self.model.to(self.device)
-        self.teacher_model.to(self.device)
         
 
     def client_update(self):
