@@ -12,7 +12,7 @@ data_config:
 fed_config:
   C: 0.1
   K: 5
-  R: 5
+  R: 500
   E: 2
   B: 256
   criterion: torch.nn.CrossEntropyLoss
