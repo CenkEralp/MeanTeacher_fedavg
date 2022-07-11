@@ -204,11 +204,11 @@ class Client(object):
 
                 if self.device == "cuda": torch.cuda.empty_cache()
 
-        test_loss1 = test_loss1 / total_size
-        test_accuracy1 = correct1 / total_size
+        test_loss1 = test_loss1 / len(self.dataloader)
+        test_accuracy1 = correct1 / len(self.dataloader)
 
-        test_loss2 = test_loss2 / total_size
-        test_accuracy2 = correct2 / total_size
+        test_loss2 = test_loss2 / len(self.dataloader)
+        test_accuracy2 = correct2 / len(self.dataloader)
 
         
         #print("{} Student model Loss: {} and Accuracy: {}".format(test_loss, test_accuracy))

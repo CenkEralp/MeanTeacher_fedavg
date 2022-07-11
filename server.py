@@ -317,15 +317,12 @@ class Server(object):
         self.model.to("cpu")
         self.teacher_model.to("cpu")
 
-        
-        test_loss1 = test_loss1 / total_size
-        test_accuracy1 = correct1 / total_size
-
-        print("Student model Loss: {} and Accuracy: {}".format(test_loss1, test_accuracy1))
+        test_loss1 = test_loss1 / len(self.dataloader)
+        test_accuracy1 = correct1 / len(self.dataloader)
 
         test_loss2 = test_loss2 / len(self.dataloader)
-        test_accuracy2 = correct2 / len(self.data)
-
+        test_accuracy2 = correct2 / len(self.dataloader)
+        print("Student model Loss: {} and Accuracy: {}".format(test_loss1, test_accuracy1))
         print("Teacher model Loss: {} and Accuracy: {}".format(test_loss2, test_accuracy2))
 
         return test_loss2, test_accuracy2
