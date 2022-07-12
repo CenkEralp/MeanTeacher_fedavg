@@ -161,7 +161,7 @@ class Client(object):
                 outputs2 = Variable(outputs2.detach().data, requires_grad=False)
 
                 loss = loss_f(outputs, labels) + get_current_consistency_weight(e) \
-                    * consistency_criterion(outputs, ema_logit)
+                    * consistency_criterion(outputs2, ema_logit)
 
                 loss.backward()
                 optimizer.step()
