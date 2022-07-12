@@ -15,7 +15,7 @@ from models import *
 from utils import *
 from client import Client
 
-from models2 import Network
+from models2 import Net
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +53,7 @@ class Server(object):
         self._round = 0
         self.writer = writer
 
-        self.model = eval(model_config["name"])(**model_config)
+        self.model = Net()#eval(model_config["name"])(**model_config)
         self.teacher_model = copy.deepcopy(self.model)
         
         self.seed = global_config["seed"]
