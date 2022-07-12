@@ -54,7 +54,7 @@ class Server(object):
         self.writer = writer
 
         self.model = Net()#eval(model_config["name"])(**model_config)
-        self.teacher_model = copy.deepcopy(self.model)
+        self.teacher_model = Net()
         
         self.seed = global_config["seed"]
         self.device = global_config["device"]
