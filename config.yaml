@@ -19,13 +19,13 @@ fed_config:
   optimizer: torch.optim.SGD
 ---
 optim_config:
-  lr: 0.01
+  lr: 0.02
   momentum: 0.9
 ---
 init_config:
   init_type: "kaiming"
   init_gain: 1.0
-  gpu_ids: [0]#, 1, 2]
+  gpu_ids: [0, 1]#, 1, 2]
 ---
 model_config: 
   #name: TwoNN
