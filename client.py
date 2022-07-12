@@ -86,7 +86,8 @@ class Client(object):
     @property
     def teacher_model(self):
         """Local model getter for parameter aggregation."""
-        return self.__teacher_model    
+        return self.__teacher_model
+
     @teacher_model.setter
     def teacher_model(self, teacher_model):
         """Local model setter for passing globally aggregated model parameters."""
@@ -159,7 +160,8 @@ class Client(object):
                 outputs2 = self.model(ema_input_var)
                 outputs2 = Variable(outputs2.detach().data, requires_grad=False)
 
-                loss = loss_f(outputs, labels) + get_current_consistency_weight(e) * consistency_criterion(outputs2, ema_logit)
+                loss = loss_f(outputs, labels) + get_current_consistency_weight(e) \
+                    * consistency_criterion(outputs, ema_logit)
 
                 loss.backward()
                 optimizer.step()

@@ -19,11 +19,11 @@ fed_config:
   optimizer: torch.optim.SGD
 ---
 optim_config:
-  lr: 0.001
+  lr: 0.01
   momentum: 0.9
 ---
 init_config:
-  init_type: "xavier"
+  init_type: "kaiming"
   init_gain: 1.0
   gpu_ids: [0]#, 1, 2]
 ---

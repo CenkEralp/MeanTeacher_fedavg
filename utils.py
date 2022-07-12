@@ -163,13 +163,13 @@ def create_datasets(data_path, dataset_name, num_clients, num_shards, iid):
     # get dataset from torchvision.datasets if exists
     
     train_transform = transforms.Compose([
-        transforms.ToTensor()
-        #transforms.Normalize(mean=[.5], std=[.5])
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[.5], std=[.5])
     ])
     
     test_transform = transforms.Compose([
-        transforms.ToTensor()
-        #transforms.Normalize(mean=[.5], std=[.5])
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[.5], std=[.5])
     ])
     
     datadir = 'data-local/images/'

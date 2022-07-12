@@ -34,7 +34,7 @@ if __name__ == "__main__":
         target=launch_tensor_board,
         args=([log_config["log_path"], log_config["tb_port"], log_config["tb_host"]])
         ).start()
-    time.sleep(3.0)
+    #time.sleep(3.0)
 
     # set the configuration of global logger
     logger = logging.getLogger(__name__)
