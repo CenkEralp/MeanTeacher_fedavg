@@ -34,6 +34,8 @@ from torch.utils.data import DataLoader
 import torchvision.datasets
 import torch.utils.data as dt
 
+import copy
+
 logger = logging.getLogger(__name__)
 
 args_consistency = 7
@@ -159,16 +161,23 @@ class Client(object):
 
                 outputs2 = self.model(ema_input_var)
                 outputs2 = Variable(outputs2.detach().data, requires_grad=False)
-
-                loss = loss_f(outputs, labels) + get_current_consistency_weight(e) \
-                    * consistency_criterion(outputs2, ema_logit)
+                
+                semisupervised = False
+                if semisupervised:
+                    loss = loss_f(outputs, labels) + get_current_consistency_weight(e) \
+                        * consistency_criterion(outputs2, ema_logit)
+                else:
+                    loss = loss_f(outputs, labels)
 
                 loss.backward()
                 optimizer.step()
 
                 self.global_step += 1
 
-                update_ema_variables(self.model, self.teacher_model, self.global_step) 
+                if semisupervised:
+                    update_ema_variables(self.model, self.teacher_model, self.global_step) 
+                else:
+                    self.teacher_model = copy.deepcopy(self.model)
 
                 if self.device == "cuda": torch.cuda.empty_cache()               
         self.model.to("cpu")
