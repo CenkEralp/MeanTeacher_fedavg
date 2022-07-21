@@ -58,13 +58,8 @@ if __name__ == "__main__":
 
     # do federated learning
     central_server.fit()
-
-    # save resulting losses and metrics
-    with open(os.path.join(log_config["log_path"], "result.pkl"), "wb") as f:
-        pickle.dump(central_server.results, f)
     
     # bye!
     message = "...done all learning process!\n...exit program!"
-    print(message); logging.info(message)
-    time.sleep(3); exit()
+    print(message); exit()
 
