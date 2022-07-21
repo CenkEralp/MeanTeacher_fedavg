@@ -7,19 +7,19 @@ data_config:
   data_path: "./data/"
   dataset_name: "MNIST"
   num_shards: 250
-  iid: False
+  iid: True
 ---
 fed_config:
   C: 0.1
   K: 5
-  R: 500
+  R: 100
   E: 10
   B: 256
   criterion: torch.nn.CrossEntropyLoss
   optimizer: torch.optim.SGD
 ---
 optim_config:
-  lr: 0.02
+  lr: 0.005
   momentum: 0.9
 ---
 init_config:

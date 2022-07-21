@@ -55,8 +55,11 @@ number_of_class = 9
 labeled_indeces = [i for i in range(len(train_dataset))]
 random.shuffle(labeled_indeces)
 labeled_indeces = labeled_indeces[0:number_of_labeled]
-unlabeled_indeces = np.delete(range(Train_len), labeled_indeces)
+unlabeled_indeces = np.delete(range(Train_len), labeled_indeces
 """
+
+unbalanced = False
+small_dataset = False
 
 label_per_class = number_of_labeled // number_of_class
 Train_len = len(train_dataset)
