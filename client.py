@@ -104,11 +104,14 @@ class Client(object):
         ratio = 0.1
         idx = np.arange(len(self.data))
         np.random.shuffle(idx)
+        #print("DATA LEN : ", len(self.data), "idx len: ", len(idx), "unlabeled len: ", len(unlabeled_idxs), "labeled len: ", len(labeled_idxs))
 
         labeled_idxs = idx[:int(len(idx) * ratio)]
         unlabeled_idxs = idx[int(len(idx) * ratio):]
         self.labeled_idxs = labeled_idxs
         self.unlabeled_idxs = unlabeled_idxs
+        
+        print("DATA LEN : ", len(self.data), "idx len: ", len(idx), "unlabeled len: ", len(unlabeled_idxs), "labeled len: ", len(labeled_idxs))
         batch_sampler2 = data2.TwoStreamBatchSampler(
             unlabeled_idxs, labeled_idxs, self.batch_size, self.batch_size // 2)
 
