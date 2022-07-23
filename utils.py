@@ -219,7 +219,7 @@ def create_datasets(data_path, dataset_name, num_clients, num_shards, iid):
         local_datasets = []
         batch_size = 256
         for local_dataset in split_datasets:
-            if len(local_dataset) >= batch_size:
+            if len(local_dataset[0]) >= batch_size:
                 local_datasets.append(CustomTensorDataset(local_dataset, transform=train_transform))
     else:
         # sort data by labels

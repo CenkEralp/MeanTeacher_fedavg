@@ -93,7 +93,6 @@ class Server(object):
 
         # split local dataset for each client
         local_datasets, test_dataset = create_datasets(self.data_path, self.dataset_name, self.num_clients, self.num_shards, self.iid)
-        
         # assign dataset to each client
         self.clients = self.create_clients(local_datasets)
 
