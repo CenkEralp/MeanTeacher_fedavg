@@ -1,7 +1,7 @@
 global_config:
   seed: 5959
   device: "cuda"
-  is_mp: True
+  is_mp: False
 ---
 data_config:
   data_path: "./data/"
