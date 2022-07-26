@@ -19,7 +19,7 @@ fed_config:
   optimizer: torch.optim.SGD
 ---
 optim_config:
-  lr: 0.01
+  lr: 0.002
   momentum: 0.9
 ---
 init_config:
