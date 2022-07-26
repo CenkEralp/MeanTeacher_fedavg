@@ -25,7 +25,7 @@ optim_config:
 init_config:
   init_type: "kaiming"
   init_gain: 1.0
-  gpu_ids: [0, 1]#, 1, 2]
+  gpu_ids: [0]#, 1, 2]
 ---
 model_config: 
   #name: TwoNN
