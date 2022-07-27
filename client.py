@@ -101,7 +101,7 @@ class Client(object):
 
     def setup(self, **client_config):
         self.batch_size = client_config["batch_size"]
-        ratio = 0.1
+        ratio = 0.01
         idx = np.arange(len(self.data))
         np.random.shuffle(idx)
         #print("DATA LEN : ", len(self.data), "idx len: ", len(idx), "unlabeled len: ", len(unlabeled_idxs), "labeled len: ", len(labeled_idxs))
