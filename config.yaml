@@ -10,7 +10,7 @@ data_config:
   iid: True
 ---
 fed_config:
-  C: 1.0
+  C: 0.4
   K: 5
   R: 100
   E: 1

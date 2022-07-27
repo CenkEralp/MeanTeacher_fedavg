@@ -166,7 +166,7 @@ class Client(object):
                 outputs2 = Variable(outputs2.detach().data, requires_grad=False)
                 #outputs2 = Variable(outputs.detach().data, requires_grad=False)
                 
-                semisupervised = False
+                semisupervised = True
                 if semisupervised:
                     loss = loss_f(outputs, labels) + get_current_consistency_weight(e) \
                         * consistency_criterion(outputs2, ema_logit)
